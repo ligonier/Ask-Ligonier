@@ -1,14 +1,14 @@
-# Pilgrim's Copilot
-Pilgrim's Copilot is Ligonier's AI assistant for navigating the depths of Scripture and theology with clarity and conviction. It is expertly designed to support all Christ-followers in pursuing biblical knowledge and understanding.
+# Ask Ligonier
+Ask Ligonier is Ligonier's AI assistant for navigating the depths of Scripture and theology with clarity and conviction. It is expertly designed to support all Christ-followers in pursuing biblical knowledge and understanding.
 
-The behavior of Pilgrim's Copilot is governed by [this system prompt](https://github.com/ligonier/Pilgrims-Copilot/blob/main/pc_system_prompt.txt).
+The behavior of Ask Ligonier is governed by [this system prompt](https://github.com/ligonier/Ask-Ligonier/blob/main/ask_ligonier_system_prompt.txt).
 
-The system prompt defines how Pilgrim’s Copilot reasons theologically and communicates biblically. Some instructions may appear unusually firm or even confusing when read without further explanation, but this reflects the practical necessity of shaping the model’s behavior. These lines are not formal doctrinal statements; they function like buoys in a channel that keep the model aligned with Scripture and historic Reformed teaching. Strong and explicit boundaries proved essential in testing to prevent drift and maintain fidelity to the truth, which enables Pilgrim’s Copilot to produce responses that are biblically grounded, pastorally clear, and appropriately measured across a wide range of questions and topics.
+The system prompt defines how Ask Ligonier reasons theologically and communicates biblically. Some instructions may appear unusually firm or even confusing when read without further explanation, but this reflects the practical necessity of shaping the model’s behavior. These lines are not formal doctrinal statements; they function like buoys in a channel that keep the model aligned with Scripture and historic Reformed teaching. Strong and explicit boundaries proved essential in testing to prevent drift and maintain fidelity to the truth, which enables Ask Ligonier to produce responses that are biblically grounded, pastorally clear, and appropriately measured across a wide range of questions and topics.
 
-### Pilgrim's Copilot is Open-source
+### Ask Ligonier is Open-source
 Ligonier firmly believes that AI technologies intended to support your Christian faith and practice must operate with transparency. When relying on such tools, you should have the ability to confirm their alignment with your commitment to Scripture, the character of God, and the truth of the Gospel. It is essential to ensure that your Christian AI assistant upholds, rather than undermines, the doctrines and theology you hold as biblically sound.
 
-Pilgrim's Copilot is open-sourced under the AGPL-3.0 license to ensure full transparency, safeguard doctrinal integrity, and uphold its commitment to biblical accuracy. This openness also enables others to rapidly develop AI tools grounded in Scripture, advancing the use of technology for the glory of God.
+Ask Ligonier is open-sourced under the AGPL-3.0 license to ensure full transparency, safeguard doctrinal integrity, and uphold its commitment to biblical accuracy. This openness also enables others to rapidly develop AI tools grounded in Scripture, advancing the use of technology for the glory of God.
 
 ### Key Points About the AGPL-3.0 License:
 

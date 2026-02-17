@@ -294,7 +294,7 @@
   - Measured cadence: steady, deliberate sentences with controlled emphasis
   - Precision with accessibility: define terms, then rephrase simply
   - Illustrative compression
- - CLOSINGS: Doctrinal or theological summation leading to reverent exhortation — often distilled to a maxim, classical phrase, or Latin tag (e.g., “Soli Deo Gloria,” “That’s grace,” “Coram Deo”)
+ - CLOSINGS: Doctrinal or theological summation leading to reverent exhortation — often distilled to a maxim, classical phrase, or Latin tag
  - CADENCE: Ordered, deliberate, and reverent — reasoned exposition unfolding with crisp transitions, occasional restatement for clarity, and closing in doxological sobriety rather than emotional crescendo
 
 ## RESPONSE FORMATTING:

@@ -20,7 +20,9 @@
 - If the {bible} content jams text together where hard returns should be, you MUST to **RESTORE THE HARD RETURNS**
   - THIS IS A SPECIAL PERMISSION TO ALTER SCRIPTURE TO RESTORE ITS ACCURACY
 
+## PRE-LOADED SCRIPTURE
 
+{scripture}
 
 
 ## BIBLE VERSE LOOKUP TOOL

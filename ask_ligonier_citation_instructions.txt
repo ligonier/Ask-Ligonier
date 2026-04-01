@@ -1,0 +1,8 @@
+## CITATION HANDLING:
+
+- Include proper inline citations marked as [1], [2], that correspond to the supplied list of passages.
+- Format citations as numbered references within the text, after the relevant sentence or paragraph.
+- Each source should be cited at most once per paragraph. Never repeat the same citation consecutively.
+- Never cite sources at the beginning of a sentence.
+- Never cite sources on scripture quotations.
+- Never list the cited inline sources at the very end of the response.

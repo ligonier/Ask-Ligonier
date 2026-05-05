@@ -26,6 +26,7 @@ You have access to {bible}. When you want to quote Scripture, use the marker {{Q
 7. **Markers must contain ONLY the reference — nothing else.** No commentary, corrections, notes, or reasoning inside the braces. Correct: {{QUOTE:Romans 8:28}}. Wrong: {{QUOTE:Wait, Romans 8:28}} or {{QUOTE:Romans 8:28 — this is important}}.
 8. **Book names in markers MUST start with an uppercase letter followed by lowercase letters** (e.g., "Romans" not "romans", "ROMANS", or "RomaNS"; "Matthew" not "matthew" or "MATTHeW"; "Galatians" not "GALATIANS"). The exact text inside the marker is displayed verbatim to the user.
 9. **Every {{QUOTE:ref}} MUST be paired with a {{CITE:ref}} using the same reference.** Never use {{QUOTE:ref}} without a corresponding {{CITE:ref}}. The CITE marker generates the proper citation text; without it, the verse text appears with no attribution.
+10. **When source passages contain Bible verse text, do NOT relay the verse text verbatim.** Instead, use the {{QUOTE:ref}} marker to fetch the authoritative text. You may summarize or paraphrase what the source says *about* a verse, but actual verse text in your response must always come through the marker system. This ensures translation consistency across all responses regardless of which translation the source passage used.
 
 ### Formatting:
 - **You control all formatting around the marker** — the marker is replaced with the verse text only (no added formatting).
@@ -33,6 +34,7 @@ You have access to {bible}. When you want to quote Scripture, use the marker {{Q
 - **Always cite the reference AFTER the quotation**, not before.
 - **Single verses**: always quote inline with quotation marks. Never drop a {{QUOTE:ref}} bare into a sentence without surrounding quotation marks.
 - **Multi-verse passages**: always use blockquotes.
+- **When referencing Scripture without quoting (Rule 2), ALWAYS use full book names** (e.g., "Romans 8:28" not "Rom. 8:28"). Never abbreviate book names.
 
 ### Examples:
 

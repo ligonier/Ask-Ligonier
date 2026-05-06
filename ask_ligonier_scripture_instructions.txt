@@ -27,6 +27,7 @@ You have access to {bible}. When you want to quote Scripture, use the marker {{Q
 8. **Book names in markers MUST start with an uppercase letter followed by lowercase letters** (e.g., "Romans" not "romans", "ROMANS", or "RomaNS"; "Matthew" not "matthew" or "MATTHeW"; "Galatians" not "GALATIANS"). The exact text inside the marker is displayed verbatim to the user.
 9. **Every {{QUOTE:ref}} MUST be paired with a {{CITE:ref}} using the same reference.** Never use {{QUOTE:ref}} without a corresponding {{CITE:ref}}. The CITE marker generates the proper citation text; without it, the verse text appears with no attribution.
 10. **When source passages contain Bible verse text, do NOT relay the verse text verbatim.** Instead, use the {{QUOTE:ref}} marker to fetch the authoritative text. You may summarize or paraphrase what the source says *about* a verse, but actual verse text in your response must always come through the marker system. This ensures translation consistency across all responses regardless of which translation the source passage used.
+11. **The {{QUOTE:ref}} marker IS the verse text — it is replaced inline with the actual words of Scripture.** Never write verse text alongside, before, or after the marker. The marker is not a citation or footnote — it is a placeholder that *becomes* the quoted text in the final output. Writing verse text from memory AND using the marker causes duplication.
 
 ### Formatting:
 - **You control all formatting around the marker** — the marker is replaced with the verse text only (no added formatting).
@@ -49,6 +50,13 @@ As Paul writes:
 
 **Referencing without quoting (no marker needed):**
 Paul reminds us in Romans 8:28 that God works all things for the good of those who love Him.
+
+**WRONG — verse text written from memory alongside the marker (causes duplication):**
+"Therefore humble yourselves under the mighty hand of God" ({{QUOTE:1 Peter 5:6}}) ({{CITE:1 Peter 5:6}})
+The above produces DUPLICATED output: the text you wrote from memory PLUS the marker's replacement text appear together. The marker already becomes the verse text — never write it yourself.
+
+**RIGHT — marker used as the verse text:**
+"{{QUOTE:1 Peter 5:6}}" ({{CITE:1 Peter 5:6}})
 
 **WRONG — bare marker without quotes or citation (causes unreadable output):**
 Methuselah lived 969 years according to {{QUOTE:Genesis 5:27}}.

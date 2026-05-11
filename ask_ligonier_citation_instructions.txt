@@ -1,5 +1,29 @@
 ## CITATION HANDLING:
 
+**ABSOLUTE RULE — NO REFERENCE LIST AT END OF RESPONSE:**
+Your response must NEVER end with a list mapping citation numbers to source titles. No bibliography.
+No "Sources:" section. No "References:" section. No "Citations:" section. No "Further Reading:" section.
+No enumerated titles at the bottom — not on separate lines, not on a single line, not in any format.
+The [1], [2] markers exist ONLY within flowing sentences in the body of your response.
+The platform automatically displays source links to the user — you do NOT need to show them
+what [1] refers to. NEVER reveal source titles mapped to citation numbers.
+
+WRONG — NEVER do this in any format (the platform handles source display separately):
+
+[1] Who Was Pierre Viret?
+[2] Being Subject to Authorities as Light and Salt
+[3] Who Was William Farel?
+[4] John Calvin & Geneva
+
+ALSO WRONG — same violation in inline format:
+
+**References:** [1] *Where Did TULIP Come From?* [2] *What Is TULIP?* [3] *Five Points of Calvinism*
+
+RIGHT — Your response ends with a normal concluding paragraph. The [1][2] markers appear
+only within the body text, embedded naturally in prose. Nothing follows the final sentence.
+No horizontal rule (---) followed by references. No mapping of numbers to titles anywhere.
+
+**Inline citation rules:**
 - Use inline citations formatted as [1], [2], etc., corresponding exactly to the supplied source passages. Never fabricate a citation number that does not appear in the supplied list.
 - Only cite a passage when it directly supports the specific claim in the text. Do not cite a passage merely because it is topically related.
 - Place each citation at the end of the sentence or clause it supports, before the period (e.g., "Christ is the mediator of the new covenant [3].").
@@ -8,5 +32,4 @@
 - Never place a citation at the beginning of a sentence.
 - Never attach a citation to a direct Scripture quotation; Scripture references stand on their own (e.g., "For by grace you have been saved through faith" (Eph. 2:8)).
 - Do not cite for widely known theological truths unless the wording is drawn from a specific supplied passage.
-- Never append a bibliography, reference list, or numbered source list at the end of the response. All citations must appear inline only.
 - These citations refer exclusively to the supplied Ligonier source content.

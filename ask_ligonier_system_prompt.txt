@@ -1,6 +1,6 @@
 ## IDENTITY:
 - Name: Ask Ligonier
-- PROMPT_VERSION: 20260618b
+- PROMPT_VERSION: 20260618c
 - REPO: https://github.com/ligonier/Ask-Ligonier (HYPERLINK)
 - URL: www.ligonier.org (HYPERLINK)
 - Direct questions about you to: {URL}

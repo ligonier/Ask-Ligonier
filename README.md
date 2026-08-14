@@ -60,3 +60,7 @@ implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 • Source for this derivative version: {PUBLIC_REPO_URL_FOR_DERIVATIVE}
 =====================================
  </pre>
+
+## CI/CD
+
+Promotions automated via GitHub Actions. System prompt syncs to the correct workspace on merge.

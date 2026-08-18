@@ -6,6 +6,15 @@
 #   DATABRICKS_HOST_STAGE / DATABRICKS_TOKEN_STAGE
 #   DATABRICKS_HOST_PROD / DATABRICKS_TOKEN_PROD
 #   JIRA_EMAIL / JIRA_TOKEN (optional — auto-transitions ticket)
+#
+# REPO_ID is hardcoded per environment below, not discovered via
+# GET /api/2.0/repos?path_prefix=... — that search endpoint returns an empty
+# result even for the exact correct path (DATA-4160/DATA-4176, 2026-08-18),
+# which made every past sync silently no-op via the "not found — skipping"
+# branch while still exiting 0 (green check). GET /api/2.0/repos/{id} by ID
+# is reliable; use that instead, and fail the job loudly if the hardcoded ID
+# stops resolving (e.g. the Git folder was deleted/recreated) rather than
+# silently skipping.
 # ─────────────────────────────────────────────
 
 name: CD — Promote
@@ -33,26 +42,48 @@ jobs:
         env:
           DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST_STAGE }}
           DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN_STAGE }}
+          EXPECTED_SHA: ${{ github.event.pull_request.merge_commit_sha }}
+          REPO_ID: "2816272582633155"
         run: |
           set -eo pipefail
-          REPO_PATH="/Workspace/Shared/Ask-Ligonier"
-          REPO_RESPONSE=$(curl -sf \
-            "$DATABRICKS_HOST/api/2.0/repos?path_prefix=$REPO_PATH" \
-            -H "Authorization: Bearer $DATABRICKS_TOKEN") || {
-            echo "❌ Databricks API call failed — check DATABRICKS_HOST_STAGE and DATABRICKS_TOKEN_STAGE"
+          curl -sf "$DATABRICKS_HOST/api/2.0/repos/$REPO_ID" \
+            -H "Authorization: Bearer $DATABRICKS_TOKEN" > /dev/null || {
+            echo "❌ REPO_ID $REPO_ID not found in stage workspace — has the Git folder been deleted/recreated? Update REPO_ID in this workflow."
             exit 1
           }
-          REPO_ID=$(echo "$REPO_RESPONSE" | python3 -c "import sys,json; repos=json.load(sys.stdin).get('repos',[]); r=next((r for r in repos if r['path'].endswith('/Ask-Ligonier')),None); print(r['id'] if r else '')")
-          if [ -z "$REPO_ID" ]; then
-            echo "⚠️  Git folder not found in stage workspace — skipping"
-            exit 0
+
+          # The PATCH request can be accepted (2xx) while the underlying git
+          # pull fails asynchronously (e.g. git index.lock contention) with no
+          # error surfaced back through this API call — DATA-4160 found this
+          # live: promote.yml reported success while the workspace stayed on
+          # the previous commit. Poll head_commit_id and fail loudly if it
+          # never reaches the merge commit, instead of trusting the PATCH
+          # response alone.
+          SYNCED=false
+          for ATTEMPT in 1 2 3 4 5 6; do
+            curl -sf -X PATCH \
+              "$DATABRICKS_HOST/api/2.0/repos/$REPO_ID" \
+              -H "Authorization: Bearer $DATABRICKS_TOKEN" \
+              -H "Content-Type: application/json" \
+              -d '{"branch":"stage"}' > /dev/null || echo "⚠️  PATCH attempt $ATTEMPT failed — retrying"
+
+            sleep 5
+            ACTUAL_SHA=$(curl -sf "$DATABRICKS_HOST/api/2.0/repos/$REPO_ID" \
+              -H "Authorization: Bearer $DATABRICKS_TOKEN" \
+              | python3 -c "import sys,json; print(json.load(sys.stdin).get('head_commit_id',''))")
+
+            if [ "$ACTUAL_SHA" = "$EXPECTED_SHA" ]; then
+              SYNCED=true
+              break
+            fi
+            echo "Attempt $ATTEMPT: stage workspace at $ACTUAL_SHA, expected $EXPECTED_SHA — retrying"
+          done
+
+          if [ "$SYNCED" != "true" ]; then
+            echo "❌ Stage workspace never reached $EXPECTED_SHA after 6 attempts (currently at $ACTUAL_SHA)"
+            exit 1
           fi
-          curl -sf -X PATCH \
-            "$DATABRICKS_HOST/api/2.0/repos/$REPO_ID" \
-            -H "Authorization: Bearer $DATABRICKS_TOKEN" \
-            -H "Content-Type: application/json" \
-            -d '{"branch":"stage"}'
-          echo "✅ Stage workspace synced to latest stage branch"
+          echo "✅ Stage workspace synced to $ACTUAL_SHA"
 
   # ─────────────────────────────────────────
   # Promote to Prod (stage → prod merge)
@@ -70,26 +101,44 @@ jobs:
         env:
           DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST_PROD }}
           DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN_PROD }}
+          EXPECTED_SHA: ${{ github.event.pull_request.merge_commit_sha }}
+          REPO_ID: "1202671141290053"
         run: |
           set -eo pipefail
-          REPO_PATH="/Workspace/Shared/Ask-Ligonier"
-          REPO_RESPONSE=$(curl -sf \
-            "$DATABRICKS_HOST/api/2.0/repos?path_prefix=$REPO_PATH" \
-            -H "Authorization: Bearer $DATABRICKS_TOKEN") || {
-            echo "❌ Databricks API call failed — check DATABRICKS_HOST_PROD and DATABRICKS_TOKEN_PROD"
+          curl -sf "$DATABRICKS_HOST/api/2.0/repos/$REPO_ID" \
+            -H "Authorization: Bearer $DATABRICKS_TOKEN" > /dev/null || {
+            echo "❌ REPO_ID $REPO_ID not found in prod workspace — has the Git folder been deleted/recreated? Update REPO_ID in this workflow."
             exit 1
           }
-          REPO_ID=$(echo "$REPO_RESPONSE" | python3 -c "import sys,json; repos=json.load(sys.stdin).get('repos',[]); r=next((r for r in repos if r['path'].endswith('/Ask-Ligonier')),None); print(r['id'] if r else '')")
-          if [ -z "$REPO_ID" ]; then
-            echo "⚠️  Git folder not found in prod workspace — skipping"
-            exit 0
+
+          # See the matching comment in the "Sync stage workspace Git folder"
+          # step above — the PATCH response alone does not prove the pull
+          # completed (DATA-4160).
+          SYNCED=false
+          for ATTEMPT in 1 2 3 4 5 6; do
+            curl -sf -X PATCH \
+              "$DATABRICKS_HOST/api/2.0/repos/$REPO_ID" \
+              -H "Authorization: Bearer $DATABRICKS_TOKEN" \
+              -H "Content-Type: application/json" \
+              -d '{"branch":"prod"}' > /dev/null || echo "⚠️  PATCH attempt $ATTEMPT failed — retrying"
+
+            sleep 5
+            ACTUAL_SHA=$(curl -sf "$DATABRICKS_HOST/api/2.0/repos/$REPO_ID" \
+              -H "Authorization: Bearer $DATABRICKS_TOKEN" \
+              | python3 -c "import sys,json; print(json.load(sys.stdin).get('head_commit_id',''))")
+
+            if [ "$ACTUAL_SHA" = "$EXPECTED_SHA" ]; then
+              SYNCED=true
+              break
+            fi
+            echo "Attempt $ATTEMPT: prod workspace at $ACTUAL_SHA, expected $EXPECTED_SHA — retrying"
+          done
+
+          if [ "$SYNCED" != "true" ]; then
+            echo "❌ Prod workspace never reached $EXPECTED_SHA after 6 attempts (currently at $ACTUAL_SHA)"
+            exit 1
           fi
-          curl -sf -X PATCH \
-            "$DATABRICKS_HOST/api/2.0/repos/$REPO_ID" \
-            -H "Authorization: Bearer $DATABRICKS_TOKEN" \
-            -H "Content-Type: application/json" \
-            -d '{"branch":"prod"}'
-          echo "✅ Prod workspace synced to latest prod branch"
+          echo "✅ Prod workspace synced to $ACTUAL_SHA"
 
       - name: Transition Jira ticket to Done
         env:

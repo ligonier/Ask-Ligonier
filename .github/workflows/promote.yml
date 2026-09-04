@@ -1,8 +1,10 @@
 # ─────────────────────────────────────────────
 # CD: Sync Databricks workspace Git folders on merge
 # Ensures system prompt is live in the correct workspace
+# Triggered when PRs are merged to stage or prod, and on every push to dev
 #
 # Required GitHub secrets:
+#   DATABRICKS_HOST_DEV / DATABRICKS_TOKEN_DEV
 #   DATABRICKS_HOST_STAGE / DATABRICKS_TOKEN_STAGE
 #   DATABRICKS_HOST_PROD / DATABRICKS_TOKEN_PROD
 #   JIRA_EMAIL / JIRA_TOKEN (optional — auto-transitions ticket)
@@ -15,6 +17,12 @@
 # is reliable; use that instead, and fail the job loudly if the hardcoded ID
 # stops resolving (e.g. the Git folder was deleted/recreated) rather than
 # silently skipping.
+#
+# The dev sync uses `push`, not `pull_request: closed` — this branch has no
+# PR gating (direct pushes to dev are the norm here), so a PR-closed trigger
+# would simply never fire. DATABRICKS_TOKEN_DEV's original value 401'd
+# against this API for months — root-caused and fixed under DATA-4311 (the
+# org secret held a Databricks Token ID, not the actual token value).
 # ─────────────────────────────────────────────
 
 name: CD — Promote
@@ -23,15 +31,79 @@ on:
   pull_request:
     types: [closed]
     branches: [stage, prod]
+  push:
+    branches: [dev]
 
 jobs:
+
+  # ─────────────────────────────────────────
+  # Sync Dev Workspace (push to dev)
+  # ─────────────────────────────────────────
+  sync-dev:
+    name: Sync Dev Workspace
+    if: github.event_name == 'push' && github.ref == 'refs/heads/dev'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Sync dev workspace Git folder
+        env:
+          DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST_DEV }}
+          DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN_DEV }}
+          EXPECTED_SHA: ${{ github.sha }}
+          REPO_ID: "1654705449804841"
+        run: |
+          set -eo pipefail
+          HTTP_STATUS=$(curl -s -o /tmp/repo_check.json -w "%{http_code}" \
+            "$DATABRICKS_HOST/api/2.0/repos/$REPO_ID" \
+            -H "Authorization: Bearer $DATABRICKS_TOKEN")
+          if [ "$HTTP_STATUS" != "200" ]; then
+            echo "❌ GET /repos/$REPO_ID returned HTTP $HTTP_STATUS (not 200) — see body below. Common causes: wrong REPO_ID, wrong DATABRICKS_HOST_DEV, or a DATABRICKS_TOKEN_DEV that's expired/scoped to a different workspace."
+            cat /tmp/repo_check.json
+            exit 1
+          fi
+
+          # The PATCH request can be accepted (2xx) while the underlying git
+          # pull fails asynchronously (e.g. git index.lock contention) with no
+          # error surfaced back through this API call — DATA-4160 found this
+          # live: promote.yml reported success while the workspace stayed on
+          # the previous commit. Poll head_commit_id and fail loudly if it
+          # never reaches the pushed commit, instead of trusting the PATCH
+          # response alone.
+          SYNCED=false
+          for ATTEMPT in 1 2 3 4 5 6; do
+            curl -sf -X PATCH \
+              "$DATABRICKS_HOST/api/2.0/repos/$REPO_ID" \
+              -H "Authorization: Bearer $DATABRICKS_TOKEN" \
+              -H "Content-Type: application/json" \
+              -d '{"branch":"dev"}' > /dev/null || echo "⚠️  PATCH attempt $ATTEMPT failed — retrying"
+
+            sleep 5
+            ACTUAL_SHA=$(curl -sf "$DATABRICKS_HOST/api/2.0/repos/$REPO_ID" \
+              -H "Authorization: Bearer $DATABRICKS_TOKEN" \
+              | python3 -c "import sys,json; print(json.load(sys.stdin).get('head_commit_id',''))")
+
+            if [ "$ACTUAL_SHA" = "$EXPECTED_SHA" ]; then
+              SYNCED=true
+              break
+            fi
+            echo "Attempt $ATTEMPT: dev workspace at $ACTUAL_SHA, expected $EXPECTED_SHA — retrying"
+          done
+
+          if [ "$SYNCED" != "true" ]; then
+            echo "❌ Dev workspace never reached $EXPECTED_SHA after 6 attempts (currently at $ACTUAL_SHA)"
+            exit 1
+          fi
+          echo "✅ Dev workspace synced to $ACTUAL_SHA"
 
   # ─────────────────────────────────────────
   # Promote to Stage (dev → stage merge)
   # ─────────────────────────────────────────
   promote-to-stage:
     name: Sync Stage Workspace
-    if: github.event.pull_request.merged == true && github.event.pull_request.base.ref == 'stage'
+    if: github.event_name == 'pull_request' && github.event.pull_request.merged == true && github.event.pull_request.base.ref == 'stage'
     runs-on: ubuntu-latest
 
     steps:
@@ -90,7 +162,7 @@ jobs:
   # ─────────────────────────────────────────
   promote-to-prod:
     name: Sync Prod Workspace
-    if: github.event.pull_request.merged == true && github.event.pull_request.base.ref == 'prod'
+    if: github.event_name == 'pull_request' && github.event.pull_request.merged == true && github.event.pull_request.base.ref == 'prod'
     runs-on: ubuntu-latest
 
     steps:

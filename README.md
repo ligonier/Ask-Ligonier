@@ -3,7 +3,10 @@ Ask Ligonier is Ligonier's AI assistant for navigating the depths of Scripture a
 
 The behavior of Ask Ligonier is governed by [this system prompt](./ask_ligonier_system_prompt.txt).
 
-The system prompt defines how Ask Ligonier reasons theologically and communicates biblically. Some instructions may appear unusually firm or even confusing when read without further explanation, but this reflects the practical necessity of shaping the model’s behavior. These lines are not formal doctrinal statements; they function like buoys in a channel that keep the model aligned with Scripture and historic Reformed teaching. Strong and explicit boundaries proved essential in testing to prevent drift and maintain fidelity to the truth, which enables Ask Ligonier to produce responses that are biblically grounded, pastorally clear, and appropriately measured across a wide range of questions and topics.
+> [!IMPORTANT]
+> **These instructions are not formal doctrinal statements and may not reflect Ligonier’s position on a given topic.**
+>
+> The system prompt defines how Ask Ligonier reasons theologically and communicates biblically. Some instructions may appear unusually firm or even confusing when read without further explanation, but this reflects the practical necessity of shaping the model’s behavior. They are worded as commands on purpose, because they are what we had to tell the model to get answers we could stand behind. These lines are not formal doctrinal statements; they function like buoys in a channel that keep the model aligned with Scripture and historic Reformed teaching. Strong and explicit boundaries proved essential in testing to prevent drift and maintain fidelity to the truth, which enables Ask Ligonier to produce responses that are biblically grounded, pastorally clear, and appropriately measured across a wide range of questions and topics.
 
 ### Ask Ligonier is Open-source
 Ligonier firmly believes that AI technologies intended to support your Christian faith and practice must operate with transparency. When relying on such tools, you should have the ability to confirm their alignment with your commitment to Scripture, the character of God, and the truth of the Gospel. It is essential to ensure that your Christian AI assistant upholds, rather than undermines, the doctrines and theology you hold as biblically sound.
